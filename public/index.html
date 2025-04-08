@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>유튜브 쇼츠 캡처</title>
   <style>
+    #videoElement {
+      display: none; /* 비디오를 화면에 표시하지 않음 */
+    }
     #captureContainer {
       display: flex;
       justify-content: center;
       align-items: center;
-    }
-    #videoElement {
-      max-width: 100%;
     }
   </style>
 </head>
@@ -20,11 +20,6 @@
 
   <input type="text" id="urlInput" placeholder="유튜브 쇼츠 URL을 입력하세요">
   <button id="loadVideoBtn">영상 로드</button>
-
-  <div id="captureContainer">
-    <video id="videoElement" controls></video>
-    <canvas id="canvasElement" style="display: none;"></canvas>
-  </div>
 
   <button id="captureBtn">5초 간격 캡처 시작</button>
 
