@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>유튜브 쇼츠 캡처</title>
   <style>
-    #videoElement {
-      max-width: 100%;
-    }
     #captureContainer {
       display: flex;
       justify-content: center;
       align-items: center;
+    }
+    #videoElement {
+      max-width: 100%;
     }
   </style>
 </head>
@@ -22,8 +22,8 @@
   <button id="loadVideoBtn">영상 로드</button>
 
   <div id="captureContainer">
-    <video id="videoElement" controls></video>
-    <canvas id="canvasElement" style="display: none;"></canvas>
+    <!-- YouTube Iframe API가 동작하는 부분 -->
+    <div id="player"></div>
   </div>
 
   <button id="captureBtn">5초 간격 캡처 시작</button>
@@ -31,6 +31,7 @@
   <h2>캡처된 이미지:</h2>
   <div id="capturedImages"></div>
 
+  <script src="https://www.youtube.com/iframe_api"></script>
   <script src="/script.js"></script>
 </body>
 </html>
