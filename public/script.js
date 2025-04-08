@@ -14,8 +14,9 @@ function loadVideo() {
   let videoId = url.match(/(?:https?:\/\/)?(?:www\.)?youtube\.com\/(?:shorts\/)([a-zA-Z0-9_-]+)/);
   if (videoId) {
     // 동영상 소스를 설정 (유튜브 API 사용 없이 영상 URL 스트리밍)
-    videoElement.src = `https://www.youtube.com/embed/${videoId[1]}?autoplay=1&controls=0&mute=1`;
+    videoElement.src = `https://www.youtube.com/embed/${videoId[1]}?autoplay=1&controls=1&mute=1`;
     videoElement.load();
+    videoElement.play(); // 비디오 재생 시작
   } else {
     alert('유효한 유튜브 쇼츠 URL을 입력해주세요.');
   }
