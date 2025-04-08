@@ -54,4 +54,10 @@ function captureImage() {
   let imgElement = document.createElement('img');
   imgElement.src = imageData;
   document.getElementById('capturedImages').appendChild(imgElement);
+
+  // 이미지 다운로드 기능 추가
+  let link = document.createElement('a');
+  link.href = imageData;  // 캡처된 이미지를 링크로 설정
+  link.download = 'captured_image.jpg';  // 다운로드할 파일 이름 설정
+  link.click();  // 자동으로 다운로드가 시작됩니다
 }
