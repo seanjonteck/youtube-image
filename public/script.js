@@ -11,13 +11,14 @@ let captureInterval;
 function loadVideo() {
   let url = document.getElementById('urlInput').value;
   
-  // 유튜브 URL에서 비디오 ID 추출
+  // 유효한 유튜브 URL인지 체크
   let videoId = url.match(/(?:https?:\/\/)?(?:www\.)?youtube\.com\/(?:shorts\/)([a-zA-Z0-9_-]+)/);
   if (videoId) {
-    // 비디오 스트리밍
+    console.log("비디오 ID: ", videoId[1]);
     videoElement.src = `https://www.youtube.com/watch?v=${videoId[1]}`;
     videoElement.load();
-    videoElement.play();
+    videoElement.play(); // 비디오 재생
+    alert("영상이 로드되었습니다!");
   } else {
     alert('유효한 유튜브 쇼츠 URL을 입력해주세요.');
   }
