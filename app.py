@@ -1,4 +1,3 @@
-
 import os
 import uuid
 import math
@@ -57,4 +56,6 @@ def serve_image(filename):
     return send_from_directory(OUTPUT_FOLDER, filename)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # 0.0.0.0에 바인딩하고 PORT 환경 변수를 사용하여 포트 설정
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=True)
