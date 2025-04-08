@@ -1,20 +1,307 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>유튜브 쇼츠 캡처</title>
-  <link rel="stylesheet" href="/css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>유튜브 쇼츠 캡처</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #ff0000;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        button {
+            background-color: #ff0000;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            display: block;
+            width: 100%;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #cc0000;
+        }
+        .info-box {
+            background-color: #f0f0f0;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        .results {
+            margin-top: 30px;
+            text-align: center;
+        }
+        .results img {
+            max-width: 100%;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+        }
+        .result-item {
+            margin-bottom: 20px;
+        }
+        .download-btn {
+            background-color: #4CAF50;
+            margin-bottom: 20px;
+        }
+        .download-btn:hover {
+            background-color: #45a049;
+        }
+        #downloadAllBtn {
+            background-color: #2196F3;
+            margin-top: 20px;
+            display: none;
+        }
+        #downloadAllBtn:hover {
+            background-color: #0b7dda;
+        }
+        .ad-container {
+            margin: 30px 0;
+            padding: 15px;
+            background-color: #f5f5f5;
+            text-align: center;
+            border-radius: 5px;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #ff0000;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .error {
+            color: #ff0000;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
-  <h1>유튜브 쇼츠 캡처</h1>
-
-  <input type="text" id="urlInput" placeholder="유튜브 쇼츠 URL을 입력하세요">
-  <button id="loadAndCaptureBtn">영상 로드 및 캡처 시작</button>
-
-  <h2>캡처된 이미지:</h2>
-  <div id="capturedImages"></div>
-
-  <script src="/js/script.js"></script>
+    <div class="container">
+        <h1>유튜브 쇼츠 캡처</h1>
+        
+        <div class="input-group">
+            <label for="videoUrl">유튜브 쇼츠 URL:</label>
+            <input type="text" id="videoUrl" placeholder="https://youtube.com/shorts/XXXXXXXXXX" required>
+        </div>
+        
+        <div class="input-group">
+            <label for="captureInterval">캡처 간격 (초):</label>
+            <input type="number" id="captureInterval" value="5" min="1" max="30">
+        </div>
+        
+        <button id="captureBtn">쇼츠 캡처하기</button>
+        
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>캡처 중입니다. 잠시만 기다려주세요...</p>
+        </div>
+        
+        <div id="errorMessage" class="error"></div>
+        
+        <div class="info-box">
+            <p><strong>사용 방법:</strong></p>
+            <ol>
+                <li>유튜브 쇼츠 URL을 입력하세요.</li>
+                <li>캡처 간격을 설정하세요 (기본 5초).</li>
+                <li>'쇼츠 캡처하기' 버튼을 클릭하세요.</li>
+                <li>개별 이미지를 다운로드하거나 모든 이미지를 한 번에 다운로드할 수 있습니다.</li>
+            </ol>
+            <p><strong>주의:</strong> 캡처된 이미지를 상업적 용도로 사용하려면 저작권 소유자의 허가가 필요합니다.</p>
+        </div>
+        
+        <button id="downloadAllBtn">모든 이미지 다운로드</button>
+        
+        <div class="results" id="results"></div>
+        
+        <div class="ad-container">
+            <!-- 광고 공간 -->
+            <p>광고 공간</p>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const captureBtn = document.getElementById('captureBtn');
+            const downloadAllBtn = document.getElementById('downloadAllBtn');
+            const resultsDiv = document.getElementById('results');
+            const loading = document.querySelector('.loading');
+            const errorMessage = document.getElementById('errorMessage');
+            const captureInterval = document.getElementById('captureInterval');
+            const videoUrlInput = document.getElementById('videoUrl');
+            
+            let capturedImages = [];
+            
+            captureBtn.addEventListener('click', async function() {
+                const videoUrl = videoUrlInput.value.trim();
+                const interval = parseInt(captureInterval.value);
+                
+                // URL 유효성 검사
+                if (!videoUrl || !videoUrl.includes('youtube.com/shorts/')) {
+                    errorMessage.textContent = '유효한 유튜브 쇼츠 URL을 입력해주세요.';
+                    return;
+                }
+                
+                if (isNaN(interval) || interval < 1 || interval > 30) {
+                    errorMessage.textContent = '캡처 간격은 1초에서 30초 사이여야 합니다.';
+                    return;
+                }
+                
+                // 초기화
+                errorMessage.textContent = '';
+                resultsDiv.innerHTML = '';
+                capturedImages = [];
+                downloadAllBtn.style.display = 'none';
+                loading.style.display = 'block';
+                
+                // 영상 ID 추출
+                const videoId = extractVideoId(videoUrl);
+                if (!videoId) {
+                    errorMessage.textContent = '유튜브 URL에서 영상 ID를 추출할 수 없습니다.';
+                    loading.style.display = 'none';
+                    return;
+                }
+                
+                try {
+                    // 서버에 요청 보내기 (실제로는 서버 엔드포인트를 구현해야 함)
+                    const response = await fetchCapturedImages(videoId, interval);
+                    
+                    // 응답 처리
+                    if (response.success) {
+                        capturedImages = response.images;
+                        displayImages(capturedImages);
+                        downloadAllBtn.style.display = 'block';
+                    } else {
+                        throw new Error(response.error || '이미지 캡처 중 오류가 발생했습니다.');
+                    }
+                } catch (error) {
+                    errorMessage.textContent = error.message || '서버와 통신 중 오류가 발생했습니다.';
+                } finally {
+                    loading.style.display = 'none';
+                }
+            });
+            
+            downloadAllBtn.addEventListener('click', function() {
+                if (capturedImages.length > 0) {
+                    downloadAllImages(capturedImages);
+                }
+            });
+            
+            // 영상 ID 추출 함수
+            function extractVideoId(url) {
+                const regex = /youtube\.com\/shorts\/([a-zA-Z0-9_-]+)/;
+                const match = url.match(regex);
+                return match ? match[1] : null;
+            }
+            
+            // 이미지 표시 함수
+            function displayImages(images) {
+                images.forEach((img, index) => {
+                    const resultItem = document.createElement('div');
+                    resultItem.className = 'result-item';
+                    
+                    const imgElement = document.createElement('img');
+                    imgElement.src = img.url;
+                    imgElement.alt = `캡처 ${index + 1}`;
+                    
+                    const downloadBtn = document.createElement('button');
+                    downloadBtn.className = 'download-btn';
+                    downloadBtn.textContent = '이미지 다운로드';
+                    downloadBtn.addEventListener('click', function() {
+                        downloadImage(img.url, `shorts_${extractVideoId(videoUrlInput.value)}_${index + 1}.jpg`);
+                    });
+                    
+                    resultItem.appendChild(imgElement);
+                    resultItem.appendChild(downloadBtn);
+                    resultsDiv.appendChild(resultItem);
+                });
+            }
+            
+            // 이미지 다운로드 함수
+            function downloadImage(url, filename) {
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+            
+            // 모든 이미지 다운로드 함수
+            function downloadAllImages(images) {
+                const videoId = extractVideoId(videoUrlInput.value);
+                images.forEach((img, index) => {
+                    setTimeout(() => {
+                        downloadImage(img.url, `shorts_${videoId}_${index + 1}.jpg`);
+                    }, index * 300); // 다운로드 간격을 두어 브라우저 부하 방지
+                });
+            }
+            
+            // 서버에서 캡처된 이미지 가져오기 (실제로는 서버 엔드포인트가 필요함)
+            // 현재는 더미 데이터를 반환하는 모의 함수
+            async function fetchCapturedImages(videoId, interval) {
+                // 실제 구현에서는 서버에 API 요청을 보내야 함
+                // 여기서는 시뮬레이션 목적으로 지연 후 더미 데이터 반환
+                return new Promise((resolve) => {
+                    // 실제 환경에서는 이 부분을 실제 서버 요청으로 대체해야 함
+                    setTimeout(() => {
+                        // 이것은 예시 응답입니다. 실제로는 서버에서 처리된 이미지 URL을 받아야 함
+                        const dummyImages = [
+                            { url: '/api/placeholder/640/360', timestamp: 0 },
+                            { url: '/api/placeholder/640/360', timestamp: interval },
+                            { url: '/api/placeholder/640/360', timestamp: interval * 2 },
+                            { url: '/api/placeholder/640/360', timestamp: interval * 3 }
+                        ];
+                        resolve({ success: true, images: dummyImages });
+                    }, 2000);
+                });
+            }
+        });
+    </script>
 </body>
 </html>
