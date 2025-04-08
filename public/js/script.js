@@ -11,6 +11,7 @@ function loadAndCapture() {
   // 유효한 유튜브 쇼츠 URL인지 체크
   let videoId = url.match(/(?:https?:\/\/)?(?:www\.)?youtube\.com\/(?:shorts\/)([a-zA-Z0-9_-]+)/);
   if (videoId) {
+    // 비디오 ID를 이용하여 유튜브 쇼츠 URL 생성
     videoElement.src = `https://www.youtube.com/watch?v=${videoId[1]}`;
     videoElement.load();
     videoElement.play(); // 비디오 재생
