@@ -1,22 +1,34 @@
+let player;
+let videoId;
+let captureInterval;
+let canvasElement = document.createElement('canvas');
+let ctx = canvasElement.getContext('2d');
+
 document.getElementById('loadVideoBtn').addEventListener('click', loadVideo);
 document.getElementById('captureBtn').addEventListener('click', startCapture);
 
-let videoElement = document.getElementById('videoElement');
-let canvasElement = document.getElementById('canvasElement');
-let ctx = canvasElement.getContext('2d');
-let captureInterval;
-let capturedImages = [];
+function onYouTubeIframeAPIReady() {
+  // YouTube API가 로드되면 player 객체를 생성
+  player = new YT.Player('player', {
+    height: '360',
+    width: '640',
+    videoId: '', // 빈 비디오 ID로 초기화
+    playerVars: {
+      'autoplay': 1,
+      'controls': 1,
+      'mute': 1
+    }
+  });
+}
 
 function loadVideo() {
   let url = document.getElementById('urlInput').value;
 
-  // 유튜브 쇼츠 URL에서 비디오 ID 추출 (정규식으로 예시)
-  let videoId = url.match(/(?:https?:\/\/)?(?:www\.)?youtube\.com\/(?:shorts\/)([a-zA-Z0-9_-]+)/);
-  if (videoId) {
-    // 동영상 소스를 설정 (유튜브 API 사용 없이 영상 URL 스트리밍)
-    videoElement.src = `https://www.youtube.com/embed/${videoId[1]}?autoplay=1&controls=1&mute=1`;
-    videoElement.load();
-    videoElement.play(); // 비디오 재생 시작
+  // 유튜브 쇼츠 URL에서 비디오 ID 추출
+  let videoIdMatch = url.match(/(?:https?:\/\/)?(?:www\.)?youtube\.com\/(?:shorts\/)([a-zA-Z0-9_-]+)/);
+  if (videoIdMatch) {
+    videoId = videoIdMatch[1];
+    player.loadVideoById(videoId);  // 유튜브 영상 로드
   } else {
     alert('유효한 유튜브 쇼츠 URL을 입력해주세요.');
   }
@@ -28,8 +40,8 @@ function startCapture() {
   }
 
   captureInterval = setInterval(() => {
-    if (videoElement.paused || videoElement.ended) {
-      return; // 비디오가 일시 정지 상태거나 끝났으면 캡처 중지
+    if (player.getPlayerState() !== YT.PlayerState.PLAYING) {
+      return; // 비디오가 재생되지 않으면 캡처 중지
     }
 
     captureImage();
@@ -39,11 +51,12 @@ function startCapture() {
 }
 
 function captureImage() {
-  canvasElement.width = videoElement.videoWidth;
-  canvasElement.height = videoElement.videoHeight;
+  // 캡처할 비디오의 크기를 canvas에 맞게 설정
+  canvasElement.width = player.getIframe().width;
+  canvasElement.height = player.getIframe().height;
 
-  // 캡처한 프레임을 canvas에 그리기
-  ctx.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
+  // 캡처된 비디오의 프레임을 canvas에 그리기
+  ctx.drawImage(player.getIframe(), 0, 0, canvasElement.width, canvasElement.height);
 
   // 캡처한 이미지를 data URL로 변환
   let imageData = canvasElement.toDataURL('image/jpeg');
