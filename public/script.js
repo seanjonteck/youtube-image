@@ -40,4 +40,16 @@ function startCapture() {
 
 function captureImage() {
   canvasElement.width = videoElement.videoWidth;
-  canvasElement.height = videoElement.videoHeight
+  canvasElement.height = videoElement.videoHeight;
+
+  // 캡처한 프레임을 canvas에 그리기
+  ctx.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
+
+  // 캡처한 이미지를 data URL로 변환
+  let imageData = canvasElement.toDataURL('image/jpeg');
+
+  // 캡처된 이미지를 화면에 추가
+  let imgElement = document.createElement('img');
+  imgElement.src = imageData;
+  document.getElementById('capturedImages').appendChild(imgElement);
+}
