@@ -1,25 +1,19 @@
 document.getElementById('loadAndCaptureBtn').addEventListener('click', loadAndCapture);
 
 let videoElement = document.createElement('video');
-videoElement.style.display = 'none'; // 비디오를 화면에 표시하지 않음
-document.body.appendChild(videoElement); // 페이지에 비디오 요소를 추가
 let canvasElement = document.createElement('canvas');
 let ctx = canvasElement.getContext('2d');
 let captureInterval;
 
 function loadAndCapture() {
   let url = document.getElementById('urlInput').value;
-  
-  // 유효한 유튜브 URL인지 체크
+
+  // 유효한 유튜브 쇼츠 URL인지 체크
   let videoId = url.match(/(?:https?:\/\/)?(?:www\.)?youtube\.com\/(?:shorts\/)([a-zA-Z0-9_-]+)/);
   if (videoId) {
-    let iframe = document.createElement('iframe');
-    iframe.src = `https://www.youtube.com/embed/${videoId[1]}?autoplay=1`;
-    iframe.width = "560";
-    iframe.height = "315";
-    iframe.frameborder = "0";
-    iframe.allow = "autoplay; encrypted-media";
-    document.body.appendChild(iframe);
+    videoElement.src = `https://www.youtube.com/watch?v=${videoId[1]}`;
+    videoElement.load();
+    videoElement.play(); // 비디오 재생
 
     alert("영상이 로드되고 5초 간격으로 캡처가 시작됩니다!");
 
@@ -29,7 +23,6 @@ function loadAndCapture() {
     alert('유효한 유튜브 쇼츠 URL을 입력해주세요.');
   }
 }
-
 
 function startCapture() {
   if (captureInterval) {
@@ -46,10 +39,11 @@ function startCapture() {
 }
 
 function captureImage() {
+  // 캡처할 비디오 크기로 캔버스 크기 설정
   canvasElement.width = videoElement.videoWidth;
   canvasElement.height = videoElement.videoHeight;
 
-  // 캡처한 프레임을 canvas에 그리기
+  // 캡처한 프레임을 캔버스에 그리기
   ctx.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
 
   // 캡처한 이미지를 Blob으로 변환
