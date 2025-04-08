@@ -46,18 +46,12 @@ function captureImage() {
   // 캡처한 프레임을 캔버스에 그리기
   ctx.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
 
-  // 캡처한 이미지를 Blob으로 변환
-  canvasElement.toBlob(function(blob) {
-    // Blob을 객체 URL로 변환
-    let url = URL.createObjectURL(blob);
+  // 캡처한 이미지를 base64 URL로 변환
+  let imageDataURL = canvasElement.toDataURL('image/jpeg');
 
-    // 다운로드 링크 생성
-    let link = document.createElement('a');
-    link.href = url;
-    link.download = 'captured_image.jpg'; // 다운로드할 파일 이름 설정
-    link.click(); // 자동으로 다운로드가 시작됩니다
-
-    // 다운로드 후 객체 URL 해제
-    URL.revokeObjectURL(url);
-  }, 'image/jpeg'); // JPEG 형식으로 저장
+  // 다운로드 링크 생성
+  let link = document.createElement('a');
+  link.href = imageDataURL;
+  link.download = 'captured_image.jpg'; // 다운로드할 파일 이름 설정
+  link.click(); // 자동으로 다운로드가 시작됩니다
 }
