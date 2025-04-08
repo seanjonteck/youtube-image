@@ -1,5 +1,4 @@
-document.getElementById('loadVideoBtn').addEventListener('click', loadVideo);
-document.getElementById('captureBtn').addEventListener('click', startCapture);
+document.getElementById('loadAndCaptureBtn').addEventListener('click', loadAndCapture);
 
 let videoElement = document.createElement('video');
 videoElement.style.display = 'none'; // 비디오를 화면에 표시하지 않음
@@ -8,17 +7,20 @@ let canvasElement = document.createElement('canvas');
 let ctx = canvasElement.getContext('2d');
 let captureInterval;
 
-function loadVideo() {
+function loadAndCapture() {
   let url = document.getElementById('urlInput').value;
   
   // 유효한 유튜브 URL인지 체크
   let videoId = url.match(/(?:https?:\/\/)?(?:www\.)?youtube\.com\/(?:shorts\/)([a-zA-Z0-9_-]+)/);
   if (videoId) {
-    console.log("비디오 ID: ", videoId[1]);
     videoElement.src = `https://www.youtube.com/watch?v=${videoId[1]}`;
     videoElement.load();
     videoElement.play(); // 비디오 재생
-    alert("영상이 로드되었습니다!");
+
+    alert("영상이 로드되고 5초 간격으로 캡처가 시작됩니다!");
+
+    // 5초 간격 캡처 시작
+    startCapture();
   } else {
     alert('유효한 유튜브 쇼츠 URL을 입력해주세요.');
   }
@@ -36,8 +38,6 @@ function startCapture() {
 
     captureImage();
   }, 5000); // 5초 간격으로 캡처
-
-  alert('5초 간격으로 캡처를 시작합니다.');
 }
 
 function captureImage() {
