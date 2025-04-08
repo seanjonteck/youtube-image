@@ -1,87 +1,27 @@
+
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouTube 이미지 추출기</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            max-width: 720px;
-            margin: auto;
-            padding: 20px;
-            background: #f9f9f9;
-        }
-        h2 {
-            color: #333;
-        }
-        .image-block {
-            margin-bottom: 20px;
-        }
-        .image-block img {
-            width: 320px;
-            display: block;
-        }
-        .actions {
-            margin-top: 5px;
-        }
-        .ad-banner {
-            margin: 30px 0;
-            text-align: center;
-        }
-    </style>
+    <title>Video Frame Extractor</title>
 </head>
 <body>
-    <h2>🎬 유튜브 영상에서 이미지 추출 (5초 간격)</h2>
-
-    <form action="/extract" method="POST">
-        <label>유튜브 영상 URL:</label><br>
-        <input type="text" name="url" size="50" required>
-        <button type="submit">추출 시작</button>
+    <h1>Video Frame Extractor</h1>
+    
+    <form action="/extract" method="post">
+        <label for="url">Enter YouTube Video URL:</label>
+        <input type="text" id="url" name="url" required>
+        <button type="submit">Extract Frames</button>
     </form>
 
-    <div class="ad-banner">
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-        <ins class="adsbygoogle"
-             style="display:block"
-             data-ad-client="ca-pub-xxxxxxxxxxxxxxxx"
-             data-ad-slot="yyyyyyyyyy"
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
-        <script>
-             (adsbygoogle = window.adsbygoogle || []).push({});
-        </script>
-    </div>
-
     {% if images %}
-        <hr>
-        <p>총 {{ estimate }}장 추출됨. 전체 다운로드는 아래 버튼을 눌러주세요.</p>
-        <button onclick="downloadAll([{% for img in images %}'{{ url_for('serve_image', filename=img) }}'{% if not loop.last %}, {% endif %}{% endfor %}])">전체 이미지 다운로드</button>
+        <h2>Extracted Frames ({{ estimate }} estimated frames)</h2>
         <div>
-            {% for img in images %}
-                <div class="image-block">
-                    <img src="{{ url_for('serve_image', filename=img) }}">
-                    <div class="actions">
-                        <a href="{{ url_for('serve_image', filename=img) }}" download>다운로드</a>
-                        &nbsp;|&nbsp;
-                        <a href="https://www.google.com/searchbyimage?&image_url={{ request.url_root }}images/{{ img }}" target="_blank">🔍 Google 이미지 검색</a>
-                    </div>
-                </div>
+            {% for image in images %}
+                <img src="{{ url_for('serve_image', filename=image) }}" alt="Frame Image">
             {% endfor %}
         </div>
     {% endif %}
-
-    <script>
-        function downloadAll(images) {
-            images.forEach(src => {
-                const a = document.createElement('a');
-                a.href = src;
-                a.download = '';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-            });
-        }
-    </script>
 </body>
 </html>
