@@ -25,7 +25,7 @@ def extract():
     video_id = str(uuid.uuid4())[:8]
     video_filename = f"video_{video_id}.mp4"
 
-    subprocess.run(["yt-dlp", "--cookies", "cookies.txt", "--sleep-interval", "10", "--geo-bypass", "-f", "best", "-o", video_filename, url], check=True)
+    subprocess.run(["yt-dlp", "--cookies", "cookies.txt", "--sleep-interval", "10", "--geo-bypass", "-f", "best", "--user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3", "-o", video_filename, url], check=True)
 
     result = subprocess.run(["ffmpeg", "-i", video_filename], stderr=subprocess.PIPE, text=True)
     duration_line = [line for line in result.stderr.splitlines() if "Duration" in line][0]
