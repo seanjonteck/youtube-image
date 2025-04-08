@@ -13,9 +13,13 @@ function loadAndCapture() {
   // 유효한 유튜브 URL인지 체크
   let videoId = url.match(/(?:https?:\/\/)?(?:www\.)?youtube\.com\/(?:shorts\/)([a-zA-Z0-9_-]+)/);
   if (videoId) {
-    videoElement.src = `https://www.youtube.com/watch?v=${videoId[1]}`;
-    videoElement.load();
-    videoElement.play(); // 비디오 재생
+    let iframe = document.createElement('iframe');
+    iframe.src = `https://www.youtube.com/embed/${videoId[1]}?autoplay=1`;
+    iframe.width = "560";
+    iframe.height = "315";
+    iframe.frameborder = "0";
+    iframe.allow = "autoplay; encrypted-media";
+    document.body.appendChild(iframe);
 
     alert("영상이 로드되고 5초 간격으로 캡처가 시작됩니다!");
 
@@ -25,6 +29,7 @@ function loadAndCapture() {
     alert('유효한 유튜브 쇼츠 URL을 입력해주세요.');
   }
 }
+
 
 function startCapture() {
   if (captureInterval) {
