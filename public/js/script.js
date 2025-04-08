@@ -11,8 +11,13 @@ function loadAndCapture() {
   // 유효한 유튜브 쇼츠 URL인지 체크
   let videoId = url.match(/(?:https?:\/\/)?(?:www\.)?youtube\.com\/(?:shorts\/)([a-zA-Z0-9_-]+)/);
   if (videoId) {
-    videoElement.src = `https://www.youtube.com/watch?v=${videoId[1]}`;
-    videoElement.load();
+    videoElement.src = `https://www.youtube.com/embed/${videoId[1]}?autoplay=1`;
+    videoElement.width = 560;
+    videoElement.height = 315;
+    videoElement.frameborder = 0;
+    videoElement.allow = "autoplay; encrypted-media";
+    document.body.appendChild(videoElement);  // 페이지에 비디오 요소 추가
+
     videoElement.play(); // 비디오 재생
 
     alert("영상이 로드되고 5초 간격으로 캡처가 시작됩니다!");
@@ -46,12 +51,18 @@ function captureImage() {
   // 캡처한 프레임을 캔버스에 그리기
   ctx.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
 
-  // 캡처한 이미지를 base64 URL로 변환
-  let imageDataURL = canvasElement.toDataURL('image/jpeg');
+  // 캡처한 이미지를 Blob으로 변환
+  canvasElement.toBlob(function(blob) {
+    // Blob을 객체 URL로 변환
+    let url = URL.createObjectURL(blob);
 
-  // 다운로드 링크 생성
-  let link = document.createElement('a');
-  link.href = imageDataURL;
-  link.download = 'captured_image.jpg'; // 다운로드할 파일 이름 설정
-  link.click(); // 자동으로 다운로드가 시작됩니다
+    // 다운로드 링크 생성
+    let link = document.createElement('a');
+    link.href = url;
+    link.download = 'captured_image.jpg'; // 다운로드할 파일 이름 설정
+    link.click(); // 자동으로 다운로드가 시작됩니다
+
+    // 다운로드 후 객체 URL 해제
+    URL.revokeObjectURL(url);
+  }, 'image/jpeg'); // JPEG 형식으로 저장
 }
