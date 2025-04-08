@@ -21,7 +21,7 @@ def extract():
 
     # yt-dlp로 비디오 스트리밍 (다운로드 없이)
     video_filename = f"video_{video_id}.mp4"
-    subprocess.run(["yt-dlp", "-f", "best", "--sleep-interval", "10", "-o", video_filename, url], check=True)
+    subprocess.run(["yt-dlp", "-f", "best", "--sleep-interval", "10", "-o", video_filename, url, "--verbose"], check=True)
 
     # 비디오 열기
     video = cv2.VideoCapture(video_filename)
